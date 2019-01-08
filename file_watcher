@@ -1,0 +1,99 @@
+/*************************************/
+/*                                   */
+/* Author		: Sunny                  */
+/* Date			: 2018.08.22             */
+/* Funtion1		: File Watcher         */
+/* Funtion2		: File format to UTF8  */
+/* System		: debian8(MOXA UC)       */
+/*                                   */
+/*************************************/
+#ifndef File_Watcher_h
+#define File_Watcher_h
+
+#include <unistd.h> //時間暫停所需要的函式庫
+#include <time.h>   //抓取系統時間
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <stdlib.h> //使用system所需要的函式庫
+
+void file_watcher(char lc_filename[256], char *targe_path);
+void fileformat(char *path);
+#endif
+
+//char lc_filename[256];
+
+void file_watcher(char lc_filename[256], char *targe_path)
+{
+    DIR *dp;
+    struct dirent *dirp;
+
+    char lc_path[45];
+    memset(lc_path, 0, 45);
+    strcat(lc_path, "/media/sd-mmcblk1p1/");
+    strcat(lc_path, targe_path);
+    strcat(lc_path, "/");
+    if ((dp = opendir(lc_path)) == NULL)
+    {
+        printf("Can't open %s\n", lc_path);
+    }
+
+    while ((dirp = readdir(dp)) != NULL)
+    {
+        if (strcmp(dirp->d_name, ".."))
+        {
+            if (strcmp(dirp->d_name, "."))
+            {
+                strcat(lc_filename, lc_path);
+                strcat(lc_filename, dirp->d_name);
+                break;
+            }
+        }
+    }
+    closedir(dp);
+
+    memset(lc_path, 0, strlen(lc_path));
+    return;
+}
+
+void fileformat(char *path) //path為傳入的檔案路徑
+{
+    char command[200];
+    sprintf(command, "file -i %s > ./data.txt", path);
+    printf("command = %s\n", command);
+    system(command);
+
+    char data[300];
+    int i = 0;
+    FILE *fd = fopen("./data.txt", "r");
+    while (!feof(fd))
+    {
+        fscanf(fd, "%s\n", data); //搜尋內容的格式
+        i++;
+    }
+    fclose(fd);
+    remove("./data.txt");
+    printf("data read = %s\n", data);
+    char *data2 = parser_value(data, "=", 2); //回傳檔案格式
+    printf("file format = %s\n", data2);
+
+    char command2[100];
+    if (!strcmp(data2, "utf-16le"))
+    {
+        sprintf(command2, "iconv -f utf-16 -t utf-8 %s > tmp.txt", path);
+    }
+    else
+    {
+        sprintf(command2, "iconv -f %s -t utf-8 %s > tmp.txt", data2, path);
+    }
+
+    printf("command2 = %s\n", command2);
+    system(command2); //將檔案轉到中介檔
+    remove(path);     //刪掉原始檔案
+
+    char command3[100];
+    sprintf(command3, "mv tmp.txt %s", path);
+    printf("command3 = %s\n", command3);
+    system(command3); //將中介檔案移動到原始到案資料夾，並將檔名改成原來檔名
+    //完成以上指令後及完成檔案轉檔
+}
