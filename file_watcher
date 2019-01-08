@@ -1,10 +1,10 @@
 /*************************************/
 /*                                   */
-/* Author		: Sunny                  */
-/* Date			: 2018.08.22             */
-/* Funtion1		: File Watcher         */
-/* Funtion2		: File format to UTF8  */
-/* System		: debian8(MOXA UC)       */
+/* Author		: Sunny              */
+/* Date			: 2018.08.22         */
+/* Funtion1		: File Watcher       */
+/* Funtion2		: File format to UTF8*/
+/* System		: debian8            */
 /*                                   */
 /*************************************/
 #ifndef File_Watcher_h
