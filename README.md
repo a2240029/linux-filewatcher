@@ -3,6 +3,6 @@
 
 Author		: Sunny Ou
 Date			: 2018.08.22
-Funtion1		: File Watcher
-Funtion2		: File format to UTF8
+Funtion1	: File Watcher
+Funtion2	: File format to UTF8
 System		: Linux debian8
